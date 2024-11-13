@@ -1,0 +1,106 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Criki</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body class="bg-gray-100">
+
+<div class="container mx-auto px-4 py-10">
+  <div class="bg-white rounded-lg shadow-lg p-6 text-center relative">
+    <h1 class="text-xl font-bold text-gray-800 mb-2">Cricket Score Counter</h1>
+
+    <!-- Toss Button -->
+    <button id="tossButton" class="absolute top-1 right-1 text-xs bg-green-500 text-white py-1 px-2 rounded hover:bg-green-600" onclick="openTossModal()">Toss</button>
+
+    <!-- Target Mode Button -->
+    <button id="targetModeButton" class="absolute top-10 right-1 text-xs bg-yellow-500 text-white py-1 px-2 rounded hover:bg-yellow-600" onclick="toggleTargetMode()">Target Mode</button>
+
+    <div id="oversLimitInputWrapper">
+      <input type="number" id="oversLimit" placeholder="Enter Overs Limit" min="1" max="15">
+      <button onclick="setOversLimit()">Set Overs Limit</button>
+      <div id="oversLimitMessage" class="hidden"></div>
+    </div>
+
+    <!-- Total Score Section -->
+    <div class="mb-6">
+      <h2 class="text-xl font-semibold text-gray-700 mb-0">Total Score: <span id="totalScore">0</span> / <span id="wickets">0</span></h2>
+      <p class="text-lg text-gray-600">Balls: <span id="ballCount">0</span> / 6</p>
+    </div>
+
+    <!-- Target Mode Message -->
+    <div id="targetModeMessage" class="text-lg font-semibold mb-4 hidden"></div>
+
+    <!-- Over Complete Message -->
+    <div id="overCompleteMessage" class="text-red-500 text-lg mb-4"></div>
+
+    <button onclick="eraseHistory()" class="bg-red-500 text-white py-2 px-4 rounded hover:bg-red-700">Erase History</button>
+
+
+    <!-- Buttons for Runs and Extras -->
+    <div class="grid grid-cols-2 sm:grid-cols-3 gap-4 mb-6">
+      <button class="bg-blue-500 text-white py-2 px-4 rounded hover:bg-blue-800 hover:ring-4" onclick="addRun(0)">Dot Ball</button>
+      <button class="bg-blue-500 text-white py-2 px-4 rounded hover:bg-blue-800 hover:ring-4" onclick="addRun(1)">1 Run</button>
+      <button class="bg-blue-500 text-white py-2 px-4 rounded hover:bg-blue-800 hover:ring-4" onclick="addRun(2)">2 Runs</button>
+      <button class="bg-blue-500 text-white py-2 px-4 rounded hover:bg-blue-800 hover:ring-4" onclick="addRun(3)">3 Runs</button>
+      <button class="bg-blue-500 text-white py-2 px-4 rounded hover:bg-blue-800 hover:ring-4" onclick="addRun(4)">4 Runs</button>
+      <button class="bg-blue-500 text-white py-2 px-4 rounded hover:bg-blue-800 hover:ring-4" onclick="addRun(6)">6 Runs</button>
+      <button class="bg-orange-500 text-white py-2 px-4 rounded hover:bg-orange-800 hover:ring-4" onclick="openExtraRun('WD')">Wide</button>
+      <button class="bg-orange-500 text-white py-2 px-4 rounded hover:bg-orange-800 hover:ring-4" onclick="openExtraRun('NB')">No Ball</button>
+      <button class="bg-red-500 text-white py-2 px-4 rounded hover:bg-red-800 hover:ring-4" onclick="openExtraRun('W')">Wicket</button>
+    </div>
+
+    <!-- This Over Display -->
+    <div class="bg-gray-100 p-4 rounded-lg text-left my-4 relative">
+      <h3 class="text-lg font-semibold text-gray-700">This over</h3>
+      <ul id="thisover" class="list-none mt-3"></ul>
+      <button id="removeLastEntryButton" class="bg-red-500 text-white text-xs py-2 px-2 rounded hover:bg-red-800 hover:ring-4 absolute bottom-0 right-0">Remove Last Entry</button>
+      <button class="bg-red-500 text-white text-xs py-2 px-2 rounded hover:bg-red-800 hover:ring-4 absolute top-0 right-0" onclick="back()">Remove Over</button>
+    </div>
+
+    <!-- Over History -->
+    <div class="bg-gray-100 p-4 rounded-lg text-left">
+      <h3 class="text-lg font-semibold text-gray-700">Over History</h3>
+      <ul id="historyList" class="list-none mt-3"></ul>
+    </div>
+  </div>
+</div>
+
+<!-- Extra Runs Modal -->
+<div id="ExtraRuns" class="modal hidden">
+  <div class="modal-content">
+    <h2 class="text-2xl font-semibold mb-4">Select Extra Runs</h2>
+    <div class="grid grid-cols-2 gap-2 mb-4">
+      <button class="bg-blue-500 text-white py-2 px-4 rounded hover:bg-blue-800 hover:ring-4" onclick="addExtraRuns(0)">0 Runs</button>
+      <button class="bg-blue-500 text-white py-2 px-4 rounded hover:bg-blue-800 hover:ring-4" onclick="addExtraRuns(1)">1 Run</button>
+      <button class="bg-blue-500 text-white py-2 px-4 rounded hover:bg-blue-800 hover:ring-4" onclick="addExtraRuns(2)">2 Runs</button>
+      <button class="bg-blue-500 text-white py-2 px-4 rounded hover:bg-blue-800 hover:ring-4" onclick="addExtraRuns(3)">3 Runs</button>
+      <button class="bg-blue-500 text-white py-2 px-4 rounded hover:bg-blue-800 hover:ring-4" onclick="addExtraRuns(4)">4 Runs</button>
+      <button class="bg-blue-500 text-white py-2 px-4 rounded hover:bg-blue-800 hover:ring-4" onclick="addExtraRuns(6)">6 Runs</button>
+    </div>
+  </div>
+</div>
+
+<footer class="bg-gray-800 text-white py-4 mt-10">
+  <div class="container mx-auto text-center text-xs">
+      <p>
+          All rights reserved by 
+            <strong>Criki</strong>
+          </a>
+          <br />
+          Made with love by 
+          <a href="https://github.com/satyam-is-pro" class="text-blue-400 hover:underline flex items-center justify-center">
+              <i class="fab fa-github mr-2"></i>
+              satyam-is-pro
+          </a>
+      </p>
+  </div>
+</footer>
+
+<script src="script.js"></script>
+</body>
+</html>
